@@ -1,6 +1,20 @@
-import React from 'react';
+import React, {useEffect, useContext} from 'react';
+import RestaurantFinder from '../apis/RestaurantFinder';
+import {RestaurantContext} from '../context/RestaurantContext';
 
-const RestaurantList = () => {
+const RestaurantList = (props) => {
+    const {restaurants, setRestaurants} = useContext(RestaurantContext);
+    const fetchData = async () => {
+        try {
+            const response = await RestaurantFinder.get('/');
+            setRestaurants(response.data.data.restaurants);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, []);
     return (
         <div className='list-group'>
             <table className='table table-hover table-dark'>
@@ -15,18 +29,24 @@ const RestaurantList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>macdonalds</td>
-                        <td>New York</td>
-                        <td>$$</td>
-                        <td>Rating</td>
-                        <td>
-                            <button className='btn btn-warning'>Update</button>
-                        </td>
-                        <td>
-                            <button className='btn btn-danger'>Delete</button>
-                        </td>
-                    </tr>
+                    {restaurants.map((restaurant) => (
+                        <tr>
+                            <td>{restaurant.name}</td>
+                            <td>{restaurant.location}</td>
+                            <td>{restaurant.price_range}</td>
+                            <td>Rating</td>
+                            <td>
+                                <button className='btn btn-warning'>
+                                    Update
+                                </button>
+                            </td>
+                            <td>
+                                <button className='btn btn-danger'>
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
