@@ -59,22 +59,39 @@ app.post('/api/v1/restaurants', async (req, res) => {
     }
 });
 //Update restaurants
-app.put('/api/v1/restaurants/:id', (req, res) => {
-    res.status(201).json({
-        status: 'success',
-        data: {
-            restaurant: req.body,
-        },
-    });
+app.put('/api/v1/restaurants/:id', async (req, res) => {
+    const {name, location, price_range} = req.body;
+    try {
+        const data = await db.query(
+            'UPDATE restaurants SET name = $1, location = $2, price_range = $3 WHERE id = $4 RETURNING *',
+            [name, location, price_range, req.params.id]
+        );
+        res.status(201).json({
+            status: 'success',
+            data: {
+                restaurant: data.rows[0],
+            },
+        });
+    } catch (err) {
+        console.error(err);
+    }
 });
 //Delete restaurant
-app.delete('/api/v1/restaurants/:id', (req, res) => {
-    res.status(200).json({
-        status: 'success',
-        data: {
-            msg: `Restaurant with the id of ${req.params.id} deleted`,
-        },
-    });
+app.delete('/api/v1/restaurants/:id', async (req, res) => {
+    try {
+        const data = await db.query('DELETE FROM restaurants WHERE id = $1', [
+            req.params.id,
+        ]);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                msg: `Restaurant with the id of ${req.params.id} deleted`,
+                restaurant: data.rows[0],
+            },
+        });
+    } catch (err) {
+        console.error(err);
+    }
 });
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
