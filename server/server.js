@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 dotenv.config({path: './config.env'});
 const db = require('./db');
 
@@ -8,6 +9,7 @@ const app = express();
 
 //midlleware
 app.use(express.json());
+app.use(cors());
 
 //Get all restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
@@ -32,7 +34,7 @@ app.get('/api/v1/restaurants/:id', async (req, res) => {
         res.status(200).json({
             status: 'success',
             data: {
-                restaurants: data.rows[0],
+                restaurant: data.rows[0],
             },
         });
     } catch (err) {
