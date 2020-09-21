@@ -1,9 +1,29 @@
-import React from 'react';
-
+import React, {useState} from 'react';
+import RestaurantFinder from '../apis/RestaurantFinder';
+import {useParams} from 'react-router-dom';
 const AddReview = () => {
+    const {id} = useParams();
+    const [formData, setFormData] = useState({
+        name: '',
+        review: '',
+        rating: '',
+    });
+    const handleChange = (e) => {
+        setFormData({...formData, [e.target.id]: e.target.value});
+    };
+    const {name, review, rating} = formData;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const response = await RestaurantFinder.post(`/${id}/addReview`, {
+            name,
+            review,
+            rating,
+        });
+        console.log(response);
+    };
     return (
         <div className='mb-2'>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div className='form-row'>
                     <div className='form-group col-8'>
                         <label htmlFor='name'>Name</label>
@@ -12,11 +32,18 @@ const AddReview = () => {
                             className='form-control'
                             id='name'
                             placeholder='name'
+                            onChange={handleChange}
+                            value={name}
                         />
                     </div>
                     <div className='form-group col-4'>
                         <label htmlFor='rating'>Rating</label>
-                        <select id='rating' className='custom-select'>
+                        <select
+                            id='rating'
+                            className='custom-select'
+                            onChange={handleChange}
+                            value={rating}
+                        >
                             <option disabled>Rating</option>
                             <option value='1'>1</option>
                             <option value='2'>2</option>
@@ -26,6 +53,18 @@ const AddReview = () => {
                         </select>
                     </div>
                 </div>
+                <div className='form-group'>
+                    <label htmlFor='review'>Review</label>
+                    <textarea
+                        id='review'
+                        cols='30'
+                        rows='10'
+                        className='form-control'
+                        value={review}
+                        onChange={handleChange}
+                    ></textarea>
+                </div>
+                <button className='btn btn-primary'>Submit</button>
             </form>
         </div>
     );
