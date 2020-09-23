@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import RestaurantFinder from '../apis/RestaurantFinder';
-import {useParams} from 'react-router-dom';
+import {useHistory, useParams} from 'react-router-dom';
 const AddReview = () => {
     const {id} = useParams();
     const [formData, setFormData] = useState({
@@ -8,18 +8,23 @@ const AddReview = () => {
         review: '',
         rating: '',
     });
+    const history = useHistory();
     const handleChange = (e) => {
         setFormData({...formData, [e.target.id]: e.target.value});
     };
     const {name, review, rating} = formData;
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await RestaurantFinder.post(`/${id}/addReview`, {
-            name,
-            review,
-            rating,
-        });
-        console.log(response);
+        try {
+            const response = await RestaurantFinder.post(`/${id}/addReview`, {
+                name,
+                review,
+                rating,
+            });
+            history.go(0);
+        } catch (err) {
+            console.error(err);
+        }
     };
     return (
         <div className='mb-2'>
